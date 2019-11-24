@@ -1,0 +1,31 @@
+name: Laravel
+
+on: [push]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:5.7
+        options: --health-cmd "mysqladmin ping -h localhost" --health-interval 20s --health-timeout 10s --health-retries 10
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: test
+      redis:
+        image: redis:5.0-alpine
+        options: --health-cmd "redis-cli -h localhost ping" --health-interval 10s --health-timeout 5s --health-retries 15
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
+    - name: Generate key
+      run: php artisan key:generate
+      
+    - name: Execute tests (Unit and Feature tests) via PHPUnit
+      env:
+        DB_DATABASE: database/database.sqlite
+      run: vendor/bin/phpunit
