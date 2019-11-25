@@ -18,6 +18,8 @@ jobs:
         options: --health-cmd "redis-cli -h localhost ping" --health-interval 10s --health-timeout 5s --health-retries 15
 
     steps:
+    - name: ls
+      run: ls -a
     - uses: actions/checkout@v1
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');" && ls -a
