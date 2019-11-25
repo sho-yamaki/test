@@ -10,6 +10,7 @@ jobs:
       mysql:
         image: mysql:5.7
         options: --health-cmd "mysqladmin ping -h localhost" --health-interval 20s --health-timeout 10s --health-retries 10
+        env:
           MYSQL_ROOT_PASSWORD: password
           MYSQL_DATABASE: test
       redis:
@@ -17,9 +18,11 @@ jobs:
         options: --health-cmd "redis-cli -h localhost ping" --health-interval 10s --health-timeout 5s --health-retries 15
 
     steps:
+    - name: ls
+      run: ls -a
     - uses: actions/checkout@v1
     - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');" && ls -a
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-suggest --no-progress --prefer-dist
     - name: Generate key
